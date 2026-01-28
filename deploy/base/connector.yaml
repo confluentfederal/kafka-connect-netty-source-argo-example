@@ -1,31 +1,27 @@
 ---
-# Netty UDP Source Connector
+# Datagen Source Connector - Users
 # Managed via GitOps - changes to this file deploy automatically via ArgoCD
-# BRANCH: feature/udp-config - Uses UDP protocol instead of TCP
+# BRANCH: feature/users-data - Generates user profile data instead of pageviews
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
-  name: netty-udp-source
+  name: datagen-gitops-demo
   namespace: confluent
 spec:
-  class: io.confluent.ps.connect.netty.NettySourceConnector
+  class: io.confluent.kafka.connect.datagen.DatagenConnector
   taskMax: 2
   connectClusterRef:
     name: connect
   configs:
-    # Topic to write data to
-    kafka.topic: "netty-udp-data"
-    
-    # Protocol configuration - UDP for high-throughput, connectionless data
-    protocol: "UDP"
-    bind.address: "0.0.0.0"
-    listen.port: "9998"
+    # Topic to write data to - CHANGED: users topic instead of pageviews
+    kafka.topic: "gitops-users"
+    quickstart: "users"
     
     # Converters
     key.converter: "org.apache.kafka.connect.storage.StringConverter"
-    value.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "io.confluent.connect.avro.AvroConverter"
+    value.converter.schema.registry.url: "http://schemaregistry.confluent.svc.cluster.local:8081"
     
-    # Queue settings - larger for UDP bursts
-    queue.capacity: "50000"
-    queue.batch.size: "2000"
-    queue.empty.wait.ms: "50"
+    # Data generation settings - slower rate for user data
+    max.interval: "2000"
+    iterations: "10000000"
