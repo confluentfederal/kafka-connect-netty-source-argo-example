@@ -33,7 +33,7 @@
     <lombok.version>1.18.42</lombok.version>
     <slf4j-reload4j.version>2.0.17</slf4j-reload4j.version>
     <netty.version>4.2.7.Final</netty.version>
-    <kafka-connect-utils.version>1.0.6</kafka-connect-utils.version>
+    <connect-utils.version>0.7.177</connect-utils.version>
 
     <kafka-connect-maven-plugin.version>0.12.0</kafka-connect-maven-plugin.version>
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
@@ -68,9 +68,9 @@
 			<version>${netty.version}</version>
 		</dependency>
     <dependency>
-      <groupId>io.confluent.ps</groupId>
-      <artifactId>kafka-connect-utils</artifactId>
-      <version>${kafka-connect-utils.version}</version>
+      <groupId>com.github.jcustenborder.kafka.connect</groupId>
+      <artifactId>connect-utils</artifactId>
+      <version>${connect-utils.version}</version>
     </dependency>
   </dependencies>
 
