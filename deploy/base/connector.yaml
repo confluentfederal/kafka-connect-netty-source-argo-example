@@ -1,32 +1,27 @@
 ---
-# Netty TCP Source Connector - High Throughput Configuration
+# Datagen Source Connector - Orders (High Throughput)
 # Managed via GitOps - changes to this file deploy automatically via ArgoCD
-# BRANCH: feature/high-throughput - Optimized for maximum data ingestion
+# BRANCH: feature/orders-high-throughput - High-volume order data generation
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
-  name: netty-tcp-source-ht
+  name: datagen-gitops-demo
   namespace: confluent
 spec:
-  class: io.confluent.ps.connect.netty.NettySourceConnector
+  class: io.confluent.kafka.connect.datagen.DatagenConnector
   taskMax: 4
   connectClusterRef:
     name: connect
   configs:
-    # Topic to write data to
-    kafka.topic: "netty-high-throughput"
-    
-    # Protocol configuration
-    protocol: "TCP"
-    bind.address: "0.0.0.0"
-    listen.port: "9999"
+    # Topic to write data to - CHANGED: orders topic with high throughput
+    kafka.topic: "gitops-orders"
+    quickstart: "orders"
     
     # Converters
     key.converter: "org.apache.kafka.connect.storage.StringConverter"
-    value.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "io.confluent.connect.avro.AvroConverter"
+    value.converter.schema.registry.url: "http://schemaregistry.confluent.svc.cluster.local:8081"
     
-    # Queue settings - optimized for high throughput
-    queue.capacity: "100000"
-    queue.batch.size: "5000"
-    queue.empty.wait.ms: "10"
-    queue.capacity.timeout.ms: "5000"
+    # Data generation settings - FAST rate for high throughput demo
+    max.interval: "100"
+    iterations: "10000000"
