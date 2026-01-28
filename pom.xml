@@ -1,0 +1,150 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.confluent.ps</groupId>
+  <artifactId>kafka-connect-netty-source</artifactId>
+  <version>1.0.10</version>
+  <packaging>jar</packaging>
+
+  <repositories>
+    <repository>
+      <id>confluent</id>
+      <url>https://packages.confluent.io/maven/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>confluent</id>
+      <url>https://packages.confluent.io/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <properties>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <confluent.version>8.1.1</confluent.version>
+    <kafka.version>${confluent.version}-ce</kafka.version>
+    <lombok.version>1.18.42</lombok.version>
+    <slf4j-reload4j.version>2.0.17</slf4j-reload4j.version>
+    <netty.version>4.2.7.Final</netty.version>
+    <kafka-connect-utils.version>1.0.6</kafka-connect-utils.version>
+
+    <kafka-connect-maven-plugin.version>0.12.0</kafka-connect-maven-plugin.version>
+    <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>connect-api</artifactId>
+      <version>${kafka.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.confluent</groupId>
+      <artifactId>kafka-schema-registry-client</artifactId>
+      <version>${confluent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-reload4j</artifactId>
+      <version>${slf4j-reload4j.version}</version>
+    </dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${netty.version}</version>
+		</dependency>
+    <dependency>
+      <groupId>io.confluent.ps</groupId>
+      <artifactId>kafka-connect-utils</artifactId>
+      <version>${kafka-connect-utils.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-connect-maven-plugin</artifactId>
+        <version>${kafka-connect-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>kafka-connect</goal>
+            </goals>
+            <configuration>
+              <title>Kafka Connect Netty Source</title>
+              <documentationUrl>
+                https://github.com/ConfluentFederal/kafka-connect-netty-source/blob/master/README.md</documentationUrl>
+              <description>A Kafka Connect connector for raw TCP, UDP or HTTP(S)</description>
+              <ownerUsername>ConfluentFederal</ownerUsername>
+              <ownerType>organization</ownerType>
+              <ownerName>Confluent Federal, LLC</ownerName>
+              <ownerUrl>https://confluent.io/</ownerUrl>
+              <ownerLogo>logos/confluent.png</ownerLogo>
+
+              <componentTypes>
+                <componentType>source</componentType>
+              </componentTypes>
+
+              <tags>
+                <tag>federal</tag>
+                <tag>netty</tag>
+                <tag>tcp</tag>
+                <tag>udp</tag>
+                <tag>http</tag>
+                <tag>https</tag>
+              </tags>
+
+              <supportProviderName>Confluent Public Sector Professional Services</supportProviderName>
+              <supportSummary>This connector is supported by members of the Public Sector Professional Services group.</supportSummary>
+              <supportUrl>https://github.com/ConfluentFederal/kafka-connect-netty-source</supportUrl>
+
+              <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+              <requirements>
+                <requirement>Confluent Platform 4.x or later</requirement>
+                <requirement>Apache Kafka 1.x or later</requirement>
+              </requirements>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
