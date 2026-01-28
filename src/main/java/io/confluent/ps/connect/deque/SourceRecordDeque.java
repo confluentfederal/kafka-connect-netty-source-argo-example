@@ -3,15 +3,18 @@ package io.confluent.ps.connect.deque;
 import org.apache.kafka.connect.source.SourceRecord;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 /**
  * A thread-safe deque for SourceRecords with batching support.
+ * Extends LinkedBlockingDeque to implement Deque interface.
  */
-public class SourceRecordDeque {
-    private final LinkedBlockingDeque<SourceRecord> deque;
+public class SourceRecordDeque extends LinkedBlockingDeque<SourceRecord> {
     private final int batchSize;
     private final long emptyWaitMs;
     private final long maximumCapacityTimeoutMs;
@@ -19,7 +22,7 @@ public class SourceRecordDeque {
 
     public SourceRecordDeque(int maximumCapacity, int batchSize, long emptyWaitMs, 
                              long maximumCapacityTimeoutMs, long maximumCapacityWaitMs) {
-        this.deque = new LinkedBlockingDeque<>(maximumCapacity);
+        super(maximumCapacity);
         this.batchSize = batchSize;
         this.emptyWaitMs = emptyWaitMs;
         this.maximumCapacityTimeoutMs = maximumCapacityTimeoutMs;
@@ -29,10 +32,10 @@ public class SourceRecordDeque {
     /**
      * Add a record to the deque, blocking if at capacity.
      */
-    public void add(SourceRecord record) throws InterruptedException {
-        if (!deque.offer(record, maximumCapacityTimeoutMs, TimeUnit.MILLISECONDS)) {
+    public void addRecord(SourceRecord record) throws InterruptedException {
+        if (!offer(record, maximumCapacityTimeoutMs, TimeUnit.MILLISECONDS)) {
             // If we couldn't add after timeout, try with longer wait
-            deque.offer(record, maximumCapacityWaitMs, TimeUnit.MILLISECONDS);
+            offer(record, maximumCapacityWaitMs, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -43,27 +46,13 @@ public class SourceRecordDeque {
         List<SourceRecord> batch = new ArrayList<>(batchSize);
         
         // Wait for at least one record
-        SourceRecord first = deque.poll(emptyWaitMs, TimeUnit.MILLISECONDS);
+        SourceRecord first = poll(emptyWaitMs, TimeUnit.MILLISECONDS);
         if (first != null) {
             batch.add(first);
             // Drain up to batchSize - 1 more records without blocking
-            deque.drainTo(batch, batchSize - 1);
+            drainTo(batch, batchSize - 1);
         }
         
         return batch;
-    }
-
-    /**
-     * Get the current size of the deque.
-     */
-    public int size() {
-        return deque.size();
-    }
-
-    /**
-     * Check if the deque is empty.
-     */
-    public boolean isEmpty() {
-        return deque.isEmpty();
     }
 }
