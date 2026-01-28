@@ -1,0 +1,33 @@
+---
+# ArgoCD Application for Netty Source Connector
+# This deploys the connector configuration to the Confluent Platform cluster
+#
+# To switch branches and deploy different configurations:
+#   kubectl patch application netty-connector -n argocd \
+#     --type merge -p '{"spec":{"source":{"targetRevision":"feature/udp-config"}}}'
+#
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: netty-connector
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/confluentfederal/kafka-connect-netty-source-argo-example.git
+    targetRevision: main  # Change this to switch branches
+    path: deploy/base
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: confluent
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

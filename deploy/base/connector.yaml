@@ -1,0 +1,30 @@
+---
+# Netty TCP Source Connector
+# Managed via GitOps - changes to this file deploy automatically via ArgoCD
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: netty-tcp-source
+  namespace: confluent
+spec:
+  class: io.confluent.ps.connect.netty.NettySourceConnector
+  taskMax: 1
+  connectClusterRef:
+    name: connect
+  configs:
+    # Topic to write data to
+    kafka.topic: "netty-raw-data"
+    
+    # Protocol configuration
+    protocol: "TCP"
+    bind.address: "0.0.0.0"
+    listen.port: "9999"
+    
+    # Converters
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.storage.StringConverter"
+    
+    # Queue settings
+    queue.capacity: "10000"
+    queue.batch.size: "1000"
+    queue.empty.wait.ms: "100"
